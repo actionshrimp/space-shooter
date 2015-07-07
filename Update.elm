@@ -18,9 +18,18 @@ updatedVel { dt, thrust } g = let
     in if vlen > 0 then { x = vx * vscaled / vlen, y = vy * vscaled / vlen } else { x = 0, y = 0 }
 
 updatedPos : Input -> Game -> Coords
-updatedPos { dt } g = {
-        x = g.player.pos.x + g.player.vel.x * dt,
-        y = g.player.pos.y + g.player.vel.y * dt
+updatedPos { dt, window } g = let
+    x' = g.player.pos.x + g.player.vel.x * dt
+    y' = g.player.pos.y + g.player.vel.y * dt
+    winW = toFloat <| fst window
+    winH = toFloat <| snd window
+    wx1 = winW / 2
+    wy1 = winH / 2
+    wx0 = negate wx1
+    wy0 = negate wy1
+    in {
+        x = if x' > wx1 then x' - winW else if x' < wx0 then x' + winW else x',
+        y = if y' > wy1 then y' - winH else if y' < wy0 then y' + winH else y'
     }
 
 update : Input -> Game -> Game
