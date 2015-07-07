@@ -7,7 +7,8 @@ type alias Game = {
     player : {
         ship : {
             rear_thruster_power : Float,
-            side_thruster_power : Float
+            side_thruster_power : Float,
+            max_vel : Float
             },
         pos : Coords,
         vel : Coords,
@@ -21,8 +22,9 @@ defaultGame = {
     t = 0,
     player = {
         ship = {
-            rear_thruster_power = 3,
-            side_thruster_power = 2
+            rear_thruster_power = 250,
+            side_thruster_power = 5,
+            max_vel = 250
             },
         pos = { x = 0, y = 0 },
         vel = { x = 0, y = 0 },
