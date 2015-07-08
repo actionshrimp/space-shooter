@@ -1,19 +1,31 @@
 module Game where
 
 type alias Coords = { x : Float, y : Float }
+
+type alias Shot = {
+    pos : Coords,
+    vel : Coords,
+    firedAt: Float,
+    angle: Float
+}
+
+type alias Player = {
+    rearThrusterPower : Float,
+    sideThrusterPower : Float,
+    maxVel : Float,
+    shotSpeed: Float,
+    shotAge: Float,
+    pos : Coords,
+    vel : Coords,
+    angle : Float
+}
+
+
 type alias Game = {
     window : Coords,
     t : Float,
-    player : {
-        ship : {
-            rear_thruster_power : Float,
-            side_thruster_power : Float,
-            max_vel : Float
-            },
-        pos : Coords,
-        vel : Coords,
-        angle : Float
-    }
+    player : Player,
+    shots: List Shot
 }
 
 defaultGame : Game
@@ -21,13 +33,14 @@ defaultGame = {
     window = { x = 0, y = 0 },
     t = 0,
     player = {
-        ship = {
-            rear_thruster_power = 250,
-            side_thruster_power = 5,
-            max_vel = 250
-            },
+        rearThrusterPower = 500,
+        sideThrusterPower = 5,
+        maxVel = 500,
+        shotSpeed = 750,
+        shotAge = 1,
         pos = { x = 0, y = 0 },
         vel = { x = 0, y = 0 },
         angle = 0
-    }
+    },
+    shots = []
   }
