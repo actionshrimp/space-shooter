@@ -1,5 +1,7 @@
 module Game where
 
+import Random
+
 type alias Coords = { x : Float, y : Float }
 
 type alias Shot = {
@@ -15,6 +17,7 @@ type alias Player = {
     maxVel : Float,
     shotSpeed: Float,
     shotAge: Float,
+    shotWiggle: Float,
     pos : Coords,
     vel : Coords,
     angle : Float
@@ -25,7 +28,8 @@ type alias Game = {
     window : Coords,
     t : Float,
     player : Player,
-    shots: List Shot
+    shots: List Shot,
+    shotWiggleSeed : Random.Seed
 }
 
 defaultGame : Game
@@ -36,11 +40,13 @@ defaultGame = {
         rearThrusterPower = 500,
         sideThrusterPower = 5,
         maxVel = 500,
-        shotSpeed = 750,
+        shotSpeed = 1500,
         shotAge = 1,
+        shotWiggle = 0.02,
         pos = { x = 0, y = 0 },
         vel = { x = 0, y = 0 },
         angle = 0
     },
-    shots = []
+    shots = [],
+    shotWiggleSeed = Random.initialSeed 0
   }

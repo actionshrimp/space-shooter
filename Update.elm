@@ -2,6 +2,7 @@ module Update where
 
 import Game exposing (Game, Coords, Shot, Player)
 import Input exposing (Input)
+import Random
 
 updateAngle : Input -> Game -> Float
 updateAngle { dt, torque } g = case torque of
@@ -39,15 +40,17 @@ updatePos { dt, window } g = let
 --        Nothing -> True
 --        Just s -> (t - s.firedAt) > (1 / fireRate)
 
-makeShot : Player -> Float -> Shot
-makeShot p t = let v = {
-        x = p.shotSpeed * cos p.angle,
-        y = p.shotSpeed * sin p.angle
+makeShot : Player -> Float -> Float -> Shot
+makeShot p wiggle t = let
+    a = p.angle + wiggle
+    v = {
+        x = p.vel.x + p.shotSpeed * cos a,
+        y = p.vel.y + p.shotSpeed * sin a
     } in {
         pos = p.pos,
         firedAt = t,
         vel = v,
-        angle = p.angle
+        angle = a
     }
 
 updateShot : Float -> Shot -> Shot
@@ -56,13 +59,18 @@ updateShot dt s = { s | pos <- { x = s.pos.x + s.vel.x * dt, y = s.pos.y + s.vel
 shotAlive : Game -> Shot -> Bool
 shotAlive g s = (g.t - s.firedAt) <= g.player.shotAge
 
+shotWiggleGen : Random.Generator Float
+shotWiggleGen = Random.float -0.1 0.1
+
 updateShots : Input -> Game -> Game
 updateShots { firing, dt } ({ t, shots, player } as g) = let
+    gen = Random.float (negate player.shotWiggle) player.shotWiggle
     updated = shots |> List.filter (shotAlive g) |> List.map (updateShot dt)
-    shots' = if not firing
-                then updated
-                else (makeShot player t) :: updated
-      in { g | shots <- shots' }
+        in if not firing
+            then { g | shots <- updated }
+            else let (wiggle, wiggleSeed') = Random.generate gen g.shotWiggleSeed
+                in { g | shots <- (makeShot player wiggle t) :: updated,
+                         shotWiggleSeed <- wiggleSeed' }
 
 updateWindow : Input -> Game -> Game
 updateWindow { window } g = { g | window <- {

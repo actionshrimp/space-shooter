@@ -35,8 +35,5 @@ gameInfo g = List.map toGameInfoEl [
     |> toForm |> move (10, -10) 
 
 render : Game -> Element
-render g = collage (round g.window.x) (round g.window.y) ([
-    bg g
-    , ship g.player
-    , gameInfo g
-    ] ++ List.map shot g.shots)
+render g = collage (round g.window.x) (round g.window.y) (
+    [bg g] ++ List.map shot g.shots ++ [ship g.player , gameInfo g])
