@@ -40,8 +40,11 @@ updateAsteroid { dt, window } a =
     let pos' = {
         x = a.pos.x + a.vel.x * dt,
         y = a.pos.y + a.vel.y * dt }
-    in { a | pos <- windowBounded window pos',
+        intR = round a.radius
+        winWithDiameter = (fst window + 2*intR, snd window + 2*intR) 
+    in { a | pos <- windowBounded winWithDiameter pos',
              angle <- a.angle + a.angularVel * dt }
+
 
 updateAsteroids : Input -> Game -> Game
 updateAsteroids i ({ asteroids } as g) = {

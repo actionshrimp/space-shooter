@@ -2,6 +2,7 @@ module Shots where
 
 import Random
 import Types exposing (..)
+import Vec exposing (windowBounded)
 
 defaultShots = {
     rSeed = Random.initialSeed 0,
@@ -40,14 +41,17 @@ addNewShots { firing } g = case (firing, canFire g) of
     (True, True) -> List.foldl makeShot g [(0, -10), (0, 10)]
     _ -> g
 
-updateShot : Float -> Shot -> Shot
-updateShot dt s = { s | pos <- { x = s.pos.x + s.vel.x * dt, y = s.pos.y + s.vel.y * dt } }
+updateShot : Input -> Shot -> Shot
+updateShot { dt, window } s = { s | pos <- {
+    x = s.pos.x + s.vel.x * dt, y = s.pos.y + s.vel.y * dt } }
 
 shotAlive : Game -> Shot -> Bool
 shotAlive g s = (g.t - s.firedAt) <= g.player.shotAge
+    && s.pos.x <= g.window.x / 2 && s.pos.x >= -g.window.x / 2
+    && s.pos.y <= g.window.y / 2 && s.pos.y >= -g.window.y / 2
 
 updateShots : Input -> Game -> Game
-updateShots { dt } ({ shots } as g) = {
+updateShots i ({ shots } as g) = {
     g | shots <- {
-        shots | list <- g.shots.list |> List.filter (shotAlive g) |> List.map (updateShot dt)
+        shots | list <- g.shots.list |> List.filter (shotAlive g) |> List.map (updateShot i)
     } }

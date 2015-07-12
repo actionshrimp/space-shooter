@@ -19,11 +19,11 @@ bounded w0 w1 h0 h1 { x, y } =
     }
 
 windowBounded : (Int, Int) -> Vec -> Vec
-windowBounded window v =
-    let winW = toFloat <| fst window
-        winH = toFloat <| snd window
+windowBounded win v =
+    let winW = toFloat <| fst win
+        winH = toFloat <| snd win
         wx1 = winW / 2
         wy1 = winH / 2
         wx0 = negate wx1
         wy0 = negate wy1
-    in bounded wx0 wx1 wy0 wy1 v
+    in bounded (-winW / 2) (winW / 2) (-winH / 2) (winH / 2) v

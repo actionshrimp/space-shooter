@@ -7,6 +7,7 @@ type alias Vec = { x : Float, y : Float }
 type alias Player = {
     rearThrusterPower : Float,
     sideThrusterPower : Float,
+    stopFactor : Float,
     maxVel : Float,
     shotSpeed: Float,
     shotAge: Float,
