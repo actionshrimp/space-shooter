@@ -1,6 +1,6 @@
 module Render where
 
-import Game exposing (Game, Coords, Player, Shot)
+import Types exposing (..)
 
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (Element, leftAligned, color, width, flow, down, topLeft, container)
@@ -19,6 +19,9 @@ ship p = group [
 shot : Shot -> Form
 shot s = ngon 3 2 |> filled white |> move (s.pos.x, s.pos.y)
 
+asteroid : Asteroid -> Form
+asteroid a = ngon 5 a.radius |> filled white |> move (a.pos.x, a.pos.y) |> rotate a.angle
+
 bg : Game -> Form
 bg g = rect g.window.x g.window.y |> filled (rgb 10 10 10)
 
@@ -34,7 +37,7 @@ gameInfo g = List.map toGameInfoEl [
     "player.pos: " ++ (toString g.player.pos),
     "player.vel: " ++ (toString g.player.vel),
     "player.angle: " ++ (toString g.player.angle),
-    "length shots: " ++ (toString <| List.length g.shots)
+    "length shots: " ++ (toString <| List.length g.shots.list)
     ]
     |> flow down
     |> container (round g.window.x) (round g.window.y) topLeft
@@ -42,4 +45,8 @@ gameInfo g = List.map toGameInfoEl [
 
 render : Game -> Element
 render g = collage (round g.window.x) (round g.window.y) (
-    [bg g] ++ List.map shot g.shots ++ [ship g.player , gameInfo g])
+        [bg g]
+        ++ List.map shot g.shots.list
+        ++ [ship g.player , gameInfo g]
+        ++ List.map asteroid g.asteroids.list
+    )

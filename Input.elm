@@ -3,15 +3,7 @@ module Input where
 import Time
 import Keyboard
 import Window
-
-type Torque = None | CW | CCW
-type alias Input = {
-    window : (Int, Int),
-    dt : Float,
-    thrust : Bool,
-    torque : Torque,
-    firing : Bool
-}
+import Types exposing (..)
 
 type alias KeyMap = {
     thrust : Keyboard.KeyCode,

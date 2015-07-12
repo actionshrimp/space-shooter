@@ -1,6 +1,7 @@
 import Signal
 
-import Game exposing (Game, defaultGame)
+import Types exposing (..)
+import Game exposing (defaultGame)
 import Render exposing (render)
 import Update exposing (update)
 import Input exposing (input)
