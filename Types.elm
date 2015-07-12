@@ -36,7 +36,8 @@ type alias Asteroid = {
     angularVel : Float,
     radius: Float,
     health: Float,
-    rank: Int
+    rank: Int,
+    sides: Int
     }
 
 type alias Asteroids = {
@@ -51,6 +52,7 @@ type alias Input = {
     dt : Float,
     thrust : Bool,
     torque : Torque,
+    stop : Bool,
     firing : Bool
 }
 

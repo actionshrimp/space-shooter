@@ -5,9 +5,9 @@ import Vec exposing (windowBounded)
 
 defaultPlayer : Player
 defaultPlayer = {
-        rearThrusterPower = 500,
-        sideThrusterPower = 5,
-        maxVel = 500,
+        rearThrusterPower = 1500,
+        sideThrusterPower = 10,
+        maxVel = 1000,
         shotSpeed = 1500,
         shotAge = 1,
         shotWiggle = 0.02,
@@ -24,7 +24,7 @@ updateAngle { dt, torque } g = case torque of
             None -> g.player.angle
 
 updateVel : Input -> Game -> Vec
-updateVel { dt, thrust } g = let 
+updateVel { dt, thrust, stop } g = if stop then { x = 0, y = 0 } else let 
         vx = if thrust then g.player.vel.x + (cos g.player.angle) * g.player.rearThrusterPower * dt else g.player.vel.x
         vy = if thrust then g.player.vel.y + (sin g.player.angle) * g.player.rearThrusterPower * dt else g.player.vel.y
         vlen = sqrt (vx * vx + vy * vy)

@@ -4,11 +4,13 @@ import Time
 import Keyboard
 import Window
 import Types exposing (..)
+import Signal exposing ((<~), (~))
 
 type alias KeyMap = {
     thrust : Keyboard.KeyCode,
     torqueCW : Keyboard.KeyCode,
     torqueCCW : Keyboard.KeyCode,
+    stop : Keyboard.KeyCode,
     fire : Keyboard.KeyCode
 }
 
@@ -16,7 +18,8 @@ keymap = {
     thrust = 38, -- (up arrow)
     torqueCW = 39, -- (right arrow)
     torqueCCW = 37, -- (left arrow)
-    fire = 32 -- (space)
+    stop = 32, -- (space)
+    fire = 16 -- (shift)
     }
 
 keysToTorque : Bool -> Bool -> Torque
@@ -35,7 +38,10 @@ thrust = Keyboard.isDown keymap.thrust
 fire : Signal Bool
 fire = Keyboard.isDown keymap.fire
 
+stop : Signal Bool
+stop = Keyboard.isDown keymap.stop
+
 time = Signal.map Time.inSeconds (Time.fps 60)
 
 input : Signal Input
-input = Signal.sampleOn time (Signal.map5 Input Window.dimensions time thrust torque fire)
+input = Signal.sampleOn time (Input <~ Window.dimensions ~ time ~ thrust ~ torque ~ stop ~ fire)
