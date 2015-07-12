@@ -18,6 +18,7 @@ type alias Player = {
     shotSpeed: Float,
     shotAge: Float,
     shotWiggle: Float,
+    shotRate: Float,
     pos : Coords,
     vel : Coords,
     angle : Float
@@ -43,6 +44,7 @@ defaultGame = {
         shotSpeed = 1500,
         shotAge = 1,
         shotWiggle = 0.02,
+        shotRate = 10,
         pos = { x = 0, y = 0 },
         vel = { x = 0, y = 0 },
         angle = 0

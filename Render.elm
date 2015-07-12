@@ -2,14 +2,19 @@ module Render where
 
 import Game exposing (Game, Coords, Player, Shot)
 
-import Graphics.Collage exposing (collage, toForm, rect, polygon, filled, Form, move, rotate, ngon)
+import Graphics.Collage exposing (..)
 import Graphics.Element exposing (Element, leftAligned, color, width, flow, down, topLeft, container)
 import Color exposing (..)
 import Text
 
 ship : Player -> Form
-ship p = polygon [(-5, 5), (10, 0), (-5, -5)] |> filled (rgb 200 0 0)
-    |> move (p.pos.x, p.pos.y) |> rotate p.angle
+ship p = group [
+        oval 16 8 |> filled (rgb 200 0 0) |> move (0, -5),
+        oval 16 8 |> filled (rgb 200 0 0) |> move (0, 5),
+        rect 4 24 |> filled (rgb 200 0 0) |> move (-2, 0),
+        rect 14 4 |> filled (rgb 200 0 0) |> move (4, 0),
+        ngon 3 6 |> filled (rgb 200 0 0) |> move (12, 0)
+    ] |> move (p.pos.x, p.pos.y) |> rotate p.angle
 
 shot : Shot -> Form
 shot s = ngon 3 2 |> filled white |> move (s.pos.x, s.pos.y)
@@ -25,6 +30,7 @@ toGameInfoEl x = Text.fromString x
 gameInfo : Game -> Form
 gameInfo g = List.map toGameInfoEl [
     "window: " ++ (toString g.window),
+    "t: " ++ (toString g.t),
     "player.pos: " ++ (toString g.player.pos),
     "player.vel: " ++ (toString g.player.vel),
     "player.angle: " ++ (toString g.player.angle),

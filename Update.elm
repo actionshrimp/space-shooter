@@ -33,25 +33,38 @@ updatePos { dt, window } g = let
         y = if y' > wy1 then y' - winH else if y' < wy0 then y' + winH else y'
     }
 
---canFire : Float -> Float -> List Shot -> Bool
---canFire fireRate t shots = let
---    lastShot = shots |> List.reverse |> List.head
---    in case lastShot of
---        Nothing -> True
---        Just s -> (t - s.firedAt) > (1 / fireRate)
+canFire : Game -> Bool
+canFire g = let lastShot = g.shots |> List.head in
+    case lastShot of
+      Nothing -> True
+      Just s -> (1.0 / g.player.shotRate) <= (g.t - s.firedAt)
 
-makeShot : Player -> Float -> Float -> Shot
-makeShot p wiggle t = let
+makeShot : (Float, Float) -> Game -> Game
+makeShot (x0, y0) g = let
+    gen = Random.float (-g.player.shotWiggle) g.player.shotWiggle
+    (wiggle, wiggleSeed') = Random.generate gen g.shotWiggleSeed
+    p = g.player
     a = p.angle + wiggle
     v = {
         x = p.vel.x + p.shotSpeed * cos a,
         y = p.vel.y + p.shotSpeed * sin a
-    } in {
-        pos = p.pos,
-        firedAt = t,
+    }
+    shot = {
+        pos = {
+            x = p.pos.x + x0 * cos p.angle - y0 * sin p.angle,
+            y = p.pos.y + x0 * sin p.angle + y0 * cos p.angle
+        },
+        firedAt = g.t,
         vel = v,
         angle = a
-    }
+    } in
+    { g | shotWiggleSeed <- wiggleSeed',
+          shots <- shot :: g.shots }
+
+addNewShots : Input -> Game -> Game
+addNewShots { firing } g = case (firing, canFire g) of
+    (True, True) -> List.foldl makeShot g [(0, -10), (0, 10)]
+    _ -> g
 
 updateShot : Float -> Shot -> Shot
 updateShot dt s = { s | pos <- { x = s.pos.x + s.vel.x * dt, y = s.pos.y + s.vel.y * dt } }
@@ -59,18 +72,14 @@ updateShot dt s = { s | pos <- { x = s.pos.x + s.vel.x * dt, y = s.pos.y + s.vel
 shotAlive : Game -> Shot -> Bool
 shotAlive g s = (g.t - s.firedAt) <= g.player.shotAge
 
-shotWiggleGen : Random.Generator Float
-shotWiggleGen = Random.float -0.1 0.1
-
 updateShots : Input -> Game -> Game
-updateShots { firing, dt } ({ t, shots, player } as g) = let
-    gen = Random.float (negate player.shotWiggle) player.shotWiggle
-    updated = shots |> List.filter (shotAlive g) |> List.map (updateShot dt)
-        in if not firing
-            then { g | shots <- updated }
-            else let (wiggle, wiggleSeed') = Random.generate gen g.shotWiggleSeed
-                in { g | shots <- (makeShot player wiggle t) :: updated,
-                         shotWiggleSeed <- wiggleSeed' }
+updateShots { dt } g = { g | shots <- g.shots |> List.filter (shotAlive g) |> List.map (updateShot dt) }
+--    updated = 
+--        in case (firing, canFire g) of
+--            (True, True) -> let (wiggle, wiggleSeed') = Random.generate gen g.shotWiggleSeed
+--                            in { g | shots <- (makeShot player wiggle t) ++ updated
+--                                   , shotWiggleSeed <- wiggleSeed' }
+--            _ -> { g | shots <- updated }
 
 updateWindow : Input -> Game -> Game
 updateWindow { window } g = { g | window <- {
@@ -88,4 +97,4 @@ updatePlayer i ({ player } as g) =
                                angle <- updateAngle i g } }
 
 update : Input -> Game -> Game
-update i g = g |> (updateWindow i) |> (updateTime i) |> (updatePlayer i) |> (updateShots i)
+update i g = g |> (updateWindow i) |> (updateTime i) |> (updatePlayer i) |> (updateShots i) |> (addNewShots i)
