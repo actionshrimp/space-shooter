@@ -21,7 +21,22 @@ shot s = ngon 3 2 |> filled white |> move (s.pos.x, s.pos.y)
 
 asteroid : Asteroid -> Form
 asteroid a = let c = if a.colliding then red else white
-             in ngon a.sides a.radius |> filled c |> move (a.pos.x, a.pos.y) |> rotate a.angle
+             in group [
+                 ngon a.sides a.radius |> outlined (solid c)
+                    |> move (a.pos.x, a.pos.y) |> rotate a.angle,
+                 traced (solid white) <|
+                 path [ (a.pos.x, a.pos.y),
+                        (a.pos.x + a.vel.x, a.pos.y + a.vel.y)
+                        ],
+                 traced (solid green) <|
+                 path [ (a.pos.x, a.pos.y),
+                        (a.pos.x + a.vel'.x, a.pos.y + a.vel'.y)
+                        ],
+                 traced (solid blue) <|
+                 path [ (a.pos.x, a.pos.y),
+                        (a.pos.x + a.colNorm.x, a.pos.y + a.colNorm.y)
+                        ]
+                 ]
 
 bg : Game -> Form
 bg g = rect g.window.x g.window.y |> filled (rgb 10 10 10)

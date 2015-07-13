@@ -39,10 +39,13 @@ type alias Asteroid = {
     health : Float,
     rank : Int,
     sides : Int,
-    colliding : Bool
+    colliding : Bool,
+    vel' : Vec,
+    colNorm : Vec
     }
 
 type alias Asteroids = {
+    maxSpeed : Float,
     list : List Asteroid,
     rSeed : Random.Seed
     }

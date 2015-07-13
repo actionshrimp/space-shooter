@@ -1,7 +1,7 @@
 module Player where
 
 import Types exposing (..)
-import Vec exposing (windowBounded)
+import Vec exposing (windowBounded, magBounded)
 
 defaultPlayer : Player
 defaultPlayer = {
@@ -30,11 +30,11 @@ updateVel { dt, thrust, stop } g =
         x = g.player.vel.x - g.player.vel.x * g.player.stopFactor * dt,
         y = g.player.vel.y - g.player.vel.y * g.player.stopFactor * dt
     } else
-    let vx = if thrust then g.player.vel.x + (cos g.player.angle) * g.player.rearThrusterPower * dt else g.player.vel.x
-        vy = if thrust then g.player.vel.y + (sin g.player.angle) * g.player.rearThrusterPower * dt else g.player.vel.y
-        vlen = sqrt (vx * vx + vy * vy)
-        vscaled = min vlen g.player.maxVel
-    in if vlen > 0 then { x = vx * vscaled / vlen, y = vy * vscaled / vlen } else { x = 0, y = 0 }
+    let v' = if thrust then {
+        x = g.player.vel.x + (cos g.player.angle) * g.player.rearThrusterPower * dt,
+        y = g.player.vel.y + (sin g.player.angle) * g.player.rearThrusterPower * dt
+        } else g.player.vel
+    in magBounded g.player.maxVel v'
 
 updatePos : Input -> Game -> Vec
 updatePos { dt, window } g = let

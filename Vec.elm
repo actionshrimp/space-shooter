@@ -28,6 +28,13 @@ windowBounded win v =
         wy0 = negate wy1
     in bounded (-winW / 2) (winW / 2) (-winH / 2) (winH / 2) v
 
+magBounded : Float -> Vec -> Vec
+magBounded b v =
+    if (mag v) > 0
+       then let m = min b (mag v) in mul m (norm v)
+       else v
+
+
 add : Vec -> Vec -> Vec
 add u v = { x = u.x + v.x, y = u.y + v.y }
 
@@ -46,8 +53,8 @@ zero = { x = 0, y = 0 }
 dot : Vec -> Vec -> Float
 dot u v = u.x * v.x + u.y + v.y
 
-mul : Vec -> Float -> Vec
-mul v f = { x = v.x * f, y = v.y * f }
+mul : Float -> Vec -> Vec
+mul f v = { x = v.x * f, y = v.y * f }
 
 reflect : Vec -> Vec -> Vec
-reflect v n = sub v (mul (norm n) (dot v n))
+reflect v n = add v (mul (-2 * dot n v) n)
