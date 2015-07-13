@@ -20,7 +20,8 @@ shot : Shot -> Form
 shot s = ngon 3 2 |> filled white |> move (s.pos.x, s.pos.y)
 
 asteroid : Asteroid -> Form
-asteroid a = ngon a.sides a.radius |> filled white |> move (a.pos.x, a.pos.y) |> rotate a.angle
+asteroid a = let c = if a.colliding then red else white
+             in ngon a.sides a.radius |> filled c |> move (a.pos.x, a.pos.y) |> rotate a.angle
 
 bg : Game -> Form
 bg g = rect g.window.x g.window.y |> filled (rgb 10 10 10)

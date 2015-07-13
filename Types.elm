@@ -35,10 +35,11 @@ type alias Asteroid = {
     vel : Vec,
     angle : Float,
     angularVel : Float,
-    radius: Float,
-    health: Float,
-    rank: Int,
-    sides: Int
+    radius : Float,
+    health : Float,
+    rank : Int,
+    sides : Int,
+    colliding : Bool
     }
 
 type alias Asteroids = {
